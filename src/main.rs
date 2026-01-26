@@ -13,6 +13,8 @@ struct Cli {
     command: Option<Commands>,
 }
 
+use shellbridge::core::executor;
+
 #[derive(Subcommand)]
 enum Commands {
     /// Translate a command
@@ -23,6 +25,10 @@ enum Commands {
         /// Target OS (linux, macos, windows). Defaults to current OS.
         #[arg(short, long)]
         target: Option<String>,
+
+        /// Execute the translated command directly
+        #[arg(short, long)]
+        execute: bool,
     },
     /// Explain a command
     Explain {
@@ -49,7 +55,7 @@ fn main() {
     };
 
     match &cli.command {
-        Some(Commands::Translate { cmd, target }) => {
+        Some(Commands::Translate { cmd, target, execute }) => {
             let target_os = if let Some(t) = target {
                 match t.to_lowercase().as_str() {
                     "linux" => Platform::Linux,
@@ -66,8 +72,17 @@ fn main() {
 
             println!("Translating '{}' to {:?}...", cmd, target_os);
             
-            match engine.translate(cmd, &target_os) {
-                Some(translated) => println!("{}", translated),
+            let translated = engine.translate(cmd, &target_os);
+            
+            match translated {
+                Some(t_cmd) => {
+                    println!("{}", t_cmd);
+                    if *execute {
+                        if let Err(e) = executor::execute_command(&t_cmd) {
+                            eprintln!("Execution error: {}", e);
+                        }
+                    }
+                },
                 None => println!("No direct translation found."),
             }
         }
