@@ -1,19 +1,23 @@
 use crate::core::command_db::{Command, load_db};
 use crate::core::os_detector::Platform;
-use anyhow::{Result};
+use crate::ai::copilot::CopilotWrapper;
+use anyhow::{Result, anyhow};
 use std::path::PathBuf;
 
 pub struct TranslationEngine {
     commands: Vec<Command>,
+    copilot: CopilotWrapper,
 }
 
 impl TranslationEngine {
     pub fn new(db_path: PathBuf) -> Result<Self> {
         let commands = load_db(db_path)?;
-        Ok(Self { commands })
+        let copilot = CopilotWrapper::new();
+        Ok(Self { commands, copilot })
     }
 
     pub fn translate(&self, cmd: &str, target_os: &Platform) -> Option<String> {
+        // 1. Try Local DB Lookup
         // Simple linear search for now. 
         // We check if the input 'cmd' matches any of the fields in any command entry.
         
@@ -38,7 +42,15 @@ impl TranslationEngine {
             }
         }
         
-        None
+        // 2. Fallback to Copilot
+        println!("  (No local match found. Asking Copilot...)");
+        match self.copilot.translate(cmd, target_os) {
+            Ok(translation) => Some(translation),
+            Err(e) => {
+                eprintln!("Copilot translation failed: {}", e);
+                None
+            }
+        }
     }
 
     fn get_command_for_platform(&self, entry: &Command, target: &Platform) -> Option<String> {
@@ -48,5 +60,21 @@ impl TranslationEngine {
             Platform::Windows => entry.windows.clone(),
             Platform::Unknown => None,
         }
+    }
+    
+    pub fn explain(&self, cmd: &str) -> Option<String> {
+        // For explanation, we can check DB description first, but Copilot is better usually.
+        // Let's check DB description first for speed.
+        for entry in &self.commands {
+             if (entry.linux.as_deref() == Some(cmd)) || 
+                (entry.macos.as_deref() == Some(cmd)) || 
+                (entry.windows.as_deref() == Some(cmd)) {
+                 return Some(entry.description.clone());
+             }
+        }
+        
+        // Fallback to copilot
+        println!("  (Asking Copilot for explanation...)");
+        self.copilot.explain(cmd).ok()
     }
 }

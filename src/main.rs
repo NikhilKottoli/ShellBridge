@@ -72,8 +72,11 @@ fn main() {
             }
         }
         Some(Commands::Explain { cmd }) => {
-            println!("Explaining '{}'", cmd);
-            // TODO: Connect explainer
+            println!("Explaining '{}'...", cmd);
+            match engine.explain(cmd) {
+                Some(explanation) => println!("\n{}", explanation),
+                None => println!("Could not explain command."),
+            }
         }
         None => {
             println!("No command provided. Use --help for usage.");
