@@ -1,6 +1,6 @@
 use crate::core::command_db::{Command, load_db};
 use crate::core::os_detector::Platform;
-use anyhow::{Result, anyhow};
+use anyhow::{Result};
 use std::path::PathBuf;
 
 pub struct TranslationEngine {
