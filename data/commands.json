@@ -1,0 +1,26 @@
+[
+    {
+        "id": "list_files",
+        "category": "fs",
+        "description": "List files in the current directory",
+        "linux": "ls -la",
+        "macos": "ls -la",
+        "windows": "dir"
+    },
+    {
+        "id": "show_ip",
+        "category": "network",
+        "description": "Show IP address configuration",
+        "linux": "ip a",
+        "macos": "ifconfig",
+        "windows": "ipconfig"
+    },
+    {
+        "id": "disk_usage",
+        "category": "system",
+        "description": "Show disk usage",
+        "linux": "df -h",
+        "macos": "df -h",
+        "windows": "wmic logicaldisk get size,freespace,caption"
+    }
+]
