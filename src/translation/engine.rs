@@ -25,7 +25,7 @@ impl TranslationEngine {
                 // Recursively translate each part
                 if let Some(t_part) = self.translate(&part, target_os) {
                     translated_parts.push(t_part);
-                } else {
+                } else {        
                     translated_parts.push(part);
                 }
             }
