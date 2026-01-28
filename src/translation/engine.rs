@@ -17,6 +17,31 @@ impl TranslationEngine {
     }
 
     pub fn translate(&self, cmd: &str, target_os: &Platform) -> Option<String> {
+        // 0. Split piped commands
+        let parts = self.split_cmd(cmd);
+        if parts.len() > 1 {
+            let mut translated_parts = Vec::new();
+            for part in parts {
+                // Recursively translate each part
+                if let Some(t_part) = self.translate(&part, target_os) {
+                    translated_parts.push(t_part);
+                } else {
+                    // If one part fails, we might want to return None, or keep original?
+                    // Let's keep original for now if translation fails for a part, 
+                    // or maybe we should fallback to copilot for the whole thing?
+                    // Let's assume if individual translation fails, we fallback to copilot for that part (which is done by recursive call)
+                    // If recursive call returns None (Copilot failed), we'll just keep the original as a best effort?
+                    // Or we returns None for the whole thing.
+                    // Let's be safe: if a part is not translatable, we assume it's already in target or valid.
+                    // But wait, translate() returns Option.
+                    // If `translate` returns None, it means even Copilot failed.
+                    // Let's just use the original part in that case.
+                    translated_parts.push(part);
+                }
+            }
+            return Some(translated_parts.join(" | "));
+        }
+
         // 1. Try Local DB Lookup
         // Simple linear search for now. 
         // We check if the input 'cmd' matches any of the fields in any command entry.
@@ -43,7 +68,7 @@ impl TranslationEngine {
         }
         
         // 2. Fallback to Copilot
-        println!("  (No local match found. Asking Copilot...)");
+        println!("  (No local match found for '{}'. Asking Copilot...)", cmd);
         match self.copilot.translate(cmd, target_os) {
             Ok(translation) => Some(translation),
             Err(e) => {
@@ -51,6 +76,48 @@ impl TranslationEngine {
                 None
             }
         }
+    }
+
+    fn split_cmd(&self, cmd: &str) -> Vec<String> {
+        let mut parts = Vec::new();
+        let mut current_part = String::new();
+        let mut in_single_quote = false;
+        let mut in_double_quote = false;
+        let mut escaped = false;
+
+        for c in cmd.chars() {
+            if escaped {
+                current_part.push(c);
+                escaped = false;
+                continue;
+            }
+
+            match c {
+                '\\' => {
+                    escaped = true;
+                    current_part.push(c);
+                }
+                '\'' if !in_double_quote => {
+                    in_single_quote = !in_single_quote;
+                    current_part.push(c);
+                }
+                '"' if !in_single_quote => {
+                    in_double_quote = !in_double_quote;
+                    current_part.push(c);
+                }
+                '|' if !in_single_quote && !in_double_quote => {
+                    parts.push(current_part.trim().to_string());
+                    current_part.clear();
+                }
+                _ => {
+                    current_part.push(c);
+                }
+            }
+        }
+        if !current_part.trim().is_empty() {
+            parts.push(current_part.trim().to_string());
+        }
+        parts
     }
 
     fn get_command_for_platform(&self, entry: &Command, target: &Platform) -> Option<String> {
