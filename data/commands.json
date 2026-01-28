@@ -22,5 +22,69 @@
         "linux": "df -h",
         "macos": "df -h",
         "windows": "wmic logicaldisk get size,freespace,caption"
+    },
+    {
+        "id": "print_wd",
+        "category": "fs",
+        "description": "Print working directory",
+        "linux": "pwd",
+        "macos": "pwd",
+        "windows": "echo %cd%"
+    },
+    {
+        "id": "clear_screen",
+        "category": "system",
+        "description": "Clear the terminal screen",
+        "linux": "clear",
+        "macos": "clear",
+        "windows": "cls"
+    },
+    {
+        "id": "env_vars",
+        "category": "system",
+        "description": "List environment variables",
+        "linux": "printenv",
+        "macos": "printenv",
+        "windows": "set"
+    },
+    {
+        "id": "cat_file",
+        "category": "fs",
+        "description": "Display file contents",
+        "linux": "cat",
+        "macos": "cat",
+        "windows": "type"
+    },
+    {
+        "id": "find_text",
+        "category": "text",
+        "description": "Search text in files",
+        "linux": "grep",
+        "macos": "grep",
+        "windows": "findstr"
+    },
+    {
+        "id": "copy_file",
+        "category": "fs",
+        "description": "Copy files",
+        "linux": "cp",
+        "macos": "cp",
+        "windows": "copy"
+    },
+    {
+        "id": "move_file",
+        "category": "fs",
+        "description": "Move or rename files",
+        "linux": "mv",
+        "macos": "mv",
+        "windows": "move"
+    },
+    {
+        "id": "remove_file",
+        "category": "fs",
+        "description": "Remove files",
+        "linux": "rm",
+        "macos": "rm",
+        "windows": "del"
     }
 ]
