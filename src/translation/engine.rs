@@ -26,16 +26,6 @@ impl TranslationEngine {
                 if let Some(t_part) = self.translate(&part, target_os) {
                     translated_parts.push(t_part);
                 } else {
-                    // If one part fails, we might want to return None, or keep original?
-                    // Let's keep original for now if translation fails for a part, 
-                    // or maybe we should fallback to copilot for the whole thing?
-                    // Let's assume if individual translation fails, we fallback to copilot for that part (which is done by recursive call)
-                    // If recursive call returns None (Copilot failed), we'll just keep the original as a best effort?
-                    // Or we returns None for the whole thing.
-                    // Let's be safe: if a part is not translatable, we assume it's already in target or valid.
-                    // But wait, translate() returns Option.
-                    // If `translate` returns None, it means even Copilot failed.
-                    // Let's just use the original part in that case.
                     translated_parts.push(part);
                 }
             }
