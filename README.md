@@ -1,4 +1,3 @@
-
 # ShellBridge
 
 > **Powered by GitHub Copilot CLI** - Your intelligent companion for cross-platform shell commands
@@ -42,6 +41,11 @@ ShellBridge harnesses the intelligence of **GitHub Copilot CLI** to provide cont
 - **✨ Auto-Correction**: Shell integration suggests translations for unknown commands directly in your terminal
 - **⚙️ Safe Execution**: Preview and execute translated commands with confidence
 - **🔍 OS Detection**: Automatically detects your current operating system
+
+<div align="center">
+  <img src="architecture.png" alt="ShellBridge Logo">
+</div>
+
 
 ## See It In Action
 
@@ -257,9 +261,6 @@ shellbridge translate "sudo systemctl status docker" --target windows
 ```
 
 ## 🏗️ Architecture
-
-ShellBridge uses a **hybrid intelligence approach** combining speed and AI power:
-
 ```
 User Command
      ↓
