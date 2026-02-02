@@ -61,6 +61,9 @@ fn main() {
                     "linux" => Platform::Linux,
                     "macos" | "darwin" => Platform::MacOS,
                     "windows" | "win32" => Platform::Windows,
+                    "wsl" => Platform::WSL,
+                    "docker" => Platform::Docker,
+                    "gitbash" => Platform::GitBash,
                     _ => {
                         eprintln!("Unknown target platform: {}", t);
                         return;
@@ -70,7 +73,7 @@ fn main() {
                 current_os.clone()
             };
 
-            println!("Translating '{}' to {:?}...", cmd, target_os);
+            eprintln!("Translating '{}' to {:?}...", cmd, target_os);
             
             let translated = engine.translate(cmd, &target_os);
             
